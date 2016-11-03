@@ -29,18 +29,18 @@ jsonfile.readFile(main, function (err, obj) {
 			let newPrintings = R.map(function (ed) {
 				let index = R.findIndex(R.propEq('name', obj[card].name))(sets[ed].cards);
 				let cardInSet = sets[ed].cards[index];
-				if (obj[card].name === 'Blue Ward') {
-					console.log(cardInSet.name)
+				if (obj[card].name === 'Declaration in Stone') {
+					console.log(cardInSet)
 				}
 
 				if (cardInSet) {
 					let mci = sets[ed].magicCardsInfoCode || ed.toLowerCase();
 					let mciNumber = undefined;
-					mciNumber = cardInSet.mciNumber;
+					mciNumber = cardInSet.mciNumber || cardInSet.number;
 					if (mciNumber && mciNumber.lastIndexOf('/'))
 						mciNumber = mciNumber.slice(mciNumber.lastIndexOf('/')+1)
 					if (mciNumber) {
-						if (obj[card].name === 'Blue Ward')
+						if (obj[card].name === 'Declaration in Stone')
 							console.log(mci + '/' + mciNumber)
 						return mci + '/' + mciNumber
 					}
@@ -76,7 +76,7 @@ jsonfile.readFile(main, function (err, obj) {
 						// console.log(denormalized.name.length)
 						console.error(err)
 					})*/
-
+		console.log(newData['15891'])
 		jsonfile.writeFile('server-cards.json', newData, function (err) {
 			console.log(newData.length)
 			console.error(err)
