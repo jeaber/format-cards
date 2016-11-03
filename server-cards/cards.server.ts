@@ -21,19 +21,41 @@ jsonfile.readFile(main, function (err, obj) {
 		jsonfile.readFile('./AllSets-x.json', function (err, sets) {
 
 		let setsVal = R.values(sets);
-
+		let counterOfFailed = 0;
+		// cycle through all cards
 		for (let card in obj) {
 			let printings = obj[card].printings;
+			// cycle through printings
 			let newPrintings = R.map(function (ed) {
 				let index = R.findIndex(R.propEq('name', obj[card].name))(sets[ed].cards);
-				if (sets[ed].cards[index].number) {
+				let cardInSet = sets[ed].cards[index];
+				if (obj[card].name === 'Blue Ward') {
+					console.log(cardInSet.name)
+				}
+
+				if (cardInSet) {
 					let mci = sets[ed].magicCardsInfoCode || ed.toLowerCase();
-					return mci + '/' + sets[ed].cards[index].number
+					let mciNumber = undefined;
+					mciNumber = cardInSet.mciNumber;
+					if (mciNumber && mciNumber.lastIndexOf('/'))
+						mciNumber = mciNumber.slice(mciNumber.lastIndexOf('/')+1)
+					if (mciNumber) {
+						if (obj[card].name === 'Blue Ward')
+							console.log(mci + '/' + mciNumber)
+						return mci + '/' + mciNumber
+					}
+
+					else {
+						counterOfFailed++;
+						//console.log(sets[ed].cards[index].name)
+						return 'false'
+					}
 				} else
 					return 'false'
 			}, printings)
 			imgSrc.push(newPrintings);
 		}
+		console.log(counterOfFailed)
 		imgSrc = R.map(function (images) {
 			return R.filter(x => (x !== 'false' && R.match(/undefined/, x)), images)
 		}, imgSrc)
