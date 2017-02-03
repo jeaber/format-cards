@@ -26,6 +26,8 @@ jsonfile.readFile(main, function (err, obj) {
     // var fObj = R.zip(fullArray, fullVals);
     var bothObj = R.zip(shortVals, fullVals);
     bothObj = bothObj.map(function (x) {
+        if (x[0] === 'mps')
+            x[0] = 'mpskld';
         return {
             short: x[0],
             full: x[1]

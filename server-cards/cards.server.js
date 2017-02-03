@@ -1,11 +1,8 @@
-/// <reference path="./../typings/modules/ramda/index.d.ts" />
-// tsc cards.server.ts && node --max_old_space_size=4096 --optimize_for_size --max_executable_size=4096 --stack_size=4096 cards.server.js
 var jsonfile = require('jsonfile');
 var R = require('ramda');
 var main = './AllCards-x.json';
 var fs = require('fs');
-//var main = JSON.parse(fs.readFileSync('./AllCards-x.json', 'utf8'));
-//var sets = JSON.parse(fs.readFileSync('./AllSets', 'utf8'));
+var _ = require('lodash');
 var keys = [];
 var denormalized;
 var lengthArray = [];
@@ -15,13 +12,35 @@ jsonfile.readFile(main, function (err, obj) {
     var imgSrc = [];
     jsonfile.readFile('./AllSets-x.json', function (err, sets) {
         var setsVal = R.values(sets);
+        var counterOfFailed = 0;
+        // cycle through all cards
         var _loop_1 = function(card) {
             var printings = obj[card].printings;
+            // cycle through printings
             var newPrintings = R.map(function (ed) {
                 var index = R.findIndex(R.propEq('name', obj[card].name))(sets[ed].cards);
-                if (sets[ed].cards[index].number) {
+                var cardInSet = sets[ed].cards[index];
+                if (obj[card].name === 'Declaration in Stone') {
+                    console.log(cardInSet);
+                }
+                if (cardInSet) {
                     var mci = sets[ed].magicCardsInfoCode || ed.toLowerCase();
-                    return mci + '/' + sets[ed].cards[index].number;
+                    var mciNumber = undefined;
+                    mciNumber = cardInSet.mciNumber || cardInSet.number;
+                    if (mci === 'mps')
+                        mci = 'mpskld';
+                    if (mciNumber && mciNumber.lastIndexOf('/'))
+                        mciNumber = mciNumber.slice(mciNumber.lastIndexOf('/') + 1);
+                    if (mciNumber) {
+                        if (obj[card].name === 'Declaration in Stone')
+                            console.log(mci + '/' + mciNumber);
+                        return mci + '/' + mciNumber;
+                    }
+                    else {
+                        counterOfFailed++;
+                        //console.log(sets[ed].cards[index].name)
+                        return 'false';
+                    }
                 }
                 else
                     return 'false';
@@ -31,6 +50,7 @@ jsonfile.readFile(main, function (err, obj) {
         for (var card in obj) {
             _loop_1(card);
         }
+        console.log(counterOfFailed);
         imgSrc = R.map(function (images) {
             return R.filter(function (x) { return (x !== 'false' && R.match(/undefined/, x)); }, images);
         }, imgSrc);
@@ -50,6 +70,7 @@ jsonfile.readFile(main, function (err, obj) {
                         // console.log(denormalized.name.length)
                         console.error(err)
                     })*/
+        console.log(newData['15891']);
         jsonfile.writeFile('server-cards.json', newData, function (err) {
             console.log(newData.length);
             console.error(err);

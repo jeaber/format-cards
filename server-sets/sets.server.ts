@@ -1,15 +1,8 @@
-/// <reference path="./../typings/modules/ramda/index.d.ts" />
-
-// tsc cards.server.ts && node --max_old_space_size=4096 --optimize_for_size --max_executable_size=4096 --stack_size=4096 cards.server.js
-
 var jsonfile = require('jsonfile');
 var R = require('ramda');
 var cards = './server-cards.json';
 var sets = './AllSets-x.json';
 var fs = require('fs');
-//var main = JSON.parse(fs.readFileSync('./AllCards-x.json', 'utf8'));
-//var sets = JSON.parse(fs.readFileSync('./AllSets', 'utf8'));
-
 var keys = [];
 var denormalized;
 var lengthArray = [];
@@ -24,9 +17,9 @@ jsonfile.readFile(cards, function (err, cards) {
 			let setCardsIds = [];
 			for (let card in setCards) {
 				let name = setCards[card].name;
-				// console.log(setCards[card].name)
+				console.log(setCards[card].name)
 				let index = R.findIndex(R.propEq('name', name))(cardsVal);
-				// console.log(index)
+				console.log(index)
 				setCardsIds.push(index);
 			}
 			newData[set].cards = setCardsIds;
